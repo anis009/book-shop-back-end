@@ -12,12 +12,26 @@ export const createBook = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getAllBooks = catchAsync(async (req: Request, res: Response) => {
-	const books = await BookServices.getAllBooks();
+	let searchTerm = null;
+	if (req.query?.searchTerm) {
+		searchTerm = req.query?.searchTerm;
+	}
+	const books = await BookServices.getAllBooks(searchTerm as string);
 	res.json({
 		success: true,
 		data: books,
 	});
 });
+
+export const getLatestAllBooks = catchAsync(
+	async (req: Request, res: Response) => {
+		const books = await BookServices.getLatestAllBooks();
+		res.json({
+			success: true,
+			data: books,
+		});
+	}
+);
 
 export const getBookById = catchAsync(async (req: Request, res: Response) => {
 	const book = await BookServices.getBookById(req.params.id);
@@ -68,4 +82,5 @@ export const BookController = {
 	updateBook,
 	deleteBook,
 	createReview,
+	getLatestAllBooks,
 };

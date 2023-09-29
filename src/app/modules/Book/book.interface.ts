@@ -1,9 +1,9 @@
 import { Model } from "mongoose";
 
 export type IReview = {
-	email: string;
-	text: string;
-	username: string;
+	email?: string;
+	review: string;
+	username?: string;
 };
 
 export type IBook = {

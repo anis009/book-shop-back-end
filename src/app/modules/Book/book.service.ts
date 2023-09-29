@@ -1,3 +1,4 @@
+import { bookSearchableFields } from "./book.constant";
 import { IBook, IReview } from "./book.interface";
 import Book from "./book.models";
 
@@ -6,8 +7,31 @@ export const createBook = async (book: IBook) => {
 	return saveBook;
 };
 
-export const getAllBooks = async () => {
-	const books = await Book.find();
+export const getAllBooks = async (searchTerm: string | null) => {
+	const andCondition = [];
+	if (searchTerm) {
+		andCondition.push({
+			$or: bookSearchableFields.map((field) => ({
+				[field]: {
+					$regex: searchTerm,
+					$options: "i",
+				},
+			})),
+		});
+	}
+	const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+	const books = await Book.find(whereCondition).sort({
+		createdAt: -1,
+	});
+	return books;
+};
+
+export const getLatestAllBooks = async () => {
+	const books = await Book.find()
+		.sort({
+			createdAt: -1,
+		})
+		.limit(10);
 	return books;
 };
 
@@ -40,4 +64,5 @@ export const BookServices = {
 	updateBook,
 	deleteBook,
 	createReview,
+	getLatestAllBooks,
 };
